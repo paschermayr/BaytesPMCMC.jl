@@ -11,11 +11,7 @@ using BaytesCore:
     AbstractDiagnostics,
     AbstractKernel,
     AbstractConstructor,
-    TemperDefault,
-    TemperingTune,
-    TemperingParameter,
     update,
-    checktemperature,
     AcceptStatistic
 
 import BaytesCore:
@@ -29,13 +25,12 @@ import BaytesCore:
     propose!,
     propagate,
     propagate!,
-    get_result,
-    get_tagged,
     result!,
-    get_loglik,
+    get_result,
+    get_ℓweight,
     get_prediction,
-    get_phase,
-    get_iteration,
+    get_tagged,
+    get_sym,
     generate_showvalues,
     UpdateBool,
     UpdateTrue,
@@ -48,6 +43,7 @@ using ModelWrappers:
     Objective,
     DiffObjective,
     ℓObjectiveResult,
+    dynamics,
     predict,
     generate,
     _checkprior
@@ -76,7 +72,6 @@ export
     UpdateBool,
     UpdateTrue,
     UpdateFalse,
-    TemperDefault,
 
     PMCMCKernel,
     update!,
@@ -85,6 +80,10 @@ export
     propose,
     propose!,
     propagate,
-    propagate!
+    propagate!,
 
+    #ModelWrappers
+    dynamics,
+    predict,
+    generate
 end

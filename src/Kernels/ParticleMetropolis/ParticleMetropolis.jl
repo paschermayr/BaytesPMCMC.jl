@@ -43,15 +43,16 @@ function propose!(
     pmcmc::ParticleMetropolis,
     model::ModelWrapper,
     data::D,
+    temperature::F = model.info.flattendefault.output(1.0),
     update::U=BaytesCore.UpdateTrue(),
-) where {D,U<:BaytesCore.UpdateBool}
+) where {D,F<:AbstractFloat,U<:BaytesCore.UpdateBool}
     ## Compute initial logposterior and save initial model value
     ℓpostₜ =
         pmcmc.pf.particles.ℓℒ.cumulative +
         ModelWrappers.log_prior_with_transform(model, pmcmc.mcmc.tune.tagged)
     val = deepcopy(model.val)
     ## Update Objective with new model parameter from other MCMC samplers and/or new/latent data
-    objective = Objective(model, data, pmcmc.mcmc.tune.tagged)
+    objective = Objective(model, data, pmcmc.mcmc.tune.tagged, temperature)
     ## Update Kernel with current objective/configs
     update!(pmcmc.mcmc.kernel, objective, update)
     ## Make MCMC Proposal step
@@ -64,7 +65,7 @@ function propose!(
             objective.model, pmcmc.mcmc.tune.tagged, resultᵖ.θᵤ
         )
     end
-    _, pf_diagnostics = propose!(_rng, pmcmc.pf, objective.model, objective.data, update)
+    _, pf_diagnostics = propose!(_rng, pmcmc.pf, objective.model, objective.data, temperature, update)
     ## Compute acceptance rate
     ℓpostₜᵖ =
         pmcmc.pf.particles.ℓℒ.cumulative +
@@ -81,7 +82,7 @@ function propose!(
     update!(pmcmc.mcmc.tune, pmcmc.mcmc.kernel.result, accept.rate)
     mcmc_diagnostics = MCMCDiagnostics(
         pmcmc.mcmc.kernel.result.ℓθᵤ,
-        pmcmc.mcmc.tune.tempering.val.current,
+        objective.temperature,
         divergent,
         acceptᵖ,
         sampler_statistic,
@@ -91,11 +92,6 @@ function propose!(
     )
     ## Return pmcmc output
     return model.val, PMCMCDiagnostics(pf_diagnostics, mcmc_diagnostics)
-end
-function propose!(
-    pmcmc::ParticleMetropolis, model::ModelWrapper, data::D, update::U=BaytesCore.UpdateTrue()
-) where {D,U<:BaytesCore.UpdateBool}
-    return propose!(Random.GLOBAL_RNG, pmcmc, model, data, update)
 end
 
 ############################################################################################

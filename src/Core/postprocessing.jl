@@ -25,14 +25,17 @@ struct PMCMCConstructor{P,F<:ParticleFilterConstructor,M<:MCMCConstructor,D<:PMC
     end
 end
 function (constructor::PMCMCConstructor)(
-    _rng::Random.AbstractRNG, model::ModelWrapper, data::D,
-    Nchains::Integer, temperdefault::BaytesCore.TemperDefault{B, F}
-) where {D, B<:BaytesCore.UpdateBool, F<:AbstractFloat}
+    _rng::Random.AbstractRNG,
+    model::ModelWrapper,
+    data::D,
+    Nchains::Integer,
+    temperature::F
+) where {D, F<:AbstractFloat}
     return PMCMC(
         _rng,
         constructor.kernel,
-        constructor.filter(_rng, model, data, Nchains, temperdefault),
-        constructor.mcmc(_rng, model, data, Nchains, temperdefault);
+        constructor.filter(_rng, model, data, Nchains, temperature),
+        constructor.mcmc(_rng, model, data, Nchains, temperature);
         default=constructor.default,
     )
 end
@@ -40,6 +43,10 @@ function PMCMC(
     kernel::Type{P}, filter::F, mcmc::M; kwargs...
 ) where {P<:PMCMCKernel,F<:ParticleFilterConstructor,M<:MCMCConstructor}
     return PMCMCConstructor(kernel, filter, mcmc, PMCMCDefault(; kwargs...))
+end
+
+function get_sym(constructor::PMCMCConstructor)
+    return get_sym(constructor.mcmc)
 end
 
 ############################################################################################
@@ -109,29 +116,14 @@ function result!(pmcmc::PMCMC, result::L) where {L<:ℓObjectiveResult}
     result!(pmcmc.kernel.mcmc, result)
     return nothing
 end
-
 function get_result(pmcmc::PMCMC)
     return get_result(pmcmc.kernel.mcmc)
 end
-
+function get_ℓweight(pmcmc::PMCMC)
+    return get_ℓweight(pmcmc.kernel.pf)
+end
 function get_tagged(pmcmc::PMCMC)
     return get_tagged(pmcmc.kernel.mcmc)
-end
-
-function get_loglik(pmcmc::PMCMC)
-    return get_loglik(pmcmc.kernel.pf)
-end
-
-function get_prediction(diagnostics::PMCMCDiagnostics)
-    return get_prediction(diagnostics.pf)
-end
-
-function get_phase(pmcmc::PMCMC)
-    return get_phase(pmcmc.kernel.mcmc)
-end
-
-function get_iteration(pmcmc::PMCMC)
-    return get_iteration(pmcmc.kernel.mcmc)
 end
 
 ############################################################################################

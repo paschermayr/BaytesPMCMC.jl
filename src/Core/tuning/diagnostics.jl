@@ -38,5 +38,10 @@ function generate_showvalues(diagnostics::D) where {D<:PMCMCDiagnostics}
 end
 
 ############################################################################################
+function get_prediction(diagnostics::PMCMCDiagnostics)
+    return get_prediction(diagnostics.pf)
+end
+
+############################################################################################
 #export
 export PMCMCDiagnostics, generate_showvalues

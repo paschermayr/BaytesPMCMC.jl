@@ -13,7 +13,7 @@ N = 10^3
 ############################################################################################
 # MCMC Kernel and AD backends
 mcmckernel_pf = [Metropolis]
-mcmckernel_pfa = [NUTS, HMC, MALA]
+mcmckernel_pfa = [NUTS, HMC, MALA, Custom]
 
 # PF Kernels
 references_pf = [Marginal()]

@@ -3,15 +3,15 @@
 @testset "ParticleMetropolis" begin
     obj = deepcopy(myobjective)
     for kernel in mcmckernel_pf
-        mcmckernel = MCMC(kernel, myobjective_mcmc;
+        mcmckernel = MCMC(_rng, kernel, myobjective_mcmc;
             default = MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
         )
         for references in references_pf
-            pfkernel = ParticleFilter(myobjective_pf ;
+            pfkernel = ParticleFilter(_rng, myobjective_pf ;
                 default = ParticleFilterDefault(referencing = references,)
             )
             ## Initialize pmcmc kernel
-            pmcmckernel = PMCMC(ParticleMetropolis, pfkernel, mcmckernel)
+            pmcmckernel = PMCMC(_rng, ParticleMetropolis, pfkernel, mcmckernel)
             propose!(_rng, pmcmckernel, obj.model, obj.data)
             ## Check if constructor can be used
             pfconstructor = BaytesFilters.ParticleFilterConstructor(
@@ -29,7 +29,7 @@
                 mcmcconstructor,
                 PMCMCDefault()
             )
-            constructor(_rng, obj.model, obj.data, 1, TemperDefault())
+            constructor(_rng, obj.model, obj.data, 1, 1.0)
         end
     end
 end
@@ -37,15 +37,15 @@ end
 @testset "ParticleGibbs" begin
     obj = deepcopy(myobjective)
     for kernel in mcmckernel_pfa
-        mcmckernel = MCMC(kernel, myobjective_mcmc;
+        mcmckernel = MCMC(_rng, kernel, myobjective_mcmc;
             default = MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
         )
         for references in references_pfa
-            pfkernel = ParticleFilter(myobjective_pf ;
+            pfkernel = ParticleFilter(_rng, myobjective_pf ;
                 default = ParticleFilterDefault(referencing = references,)
             )
             ## Initialize pmcmc kernel
-            pmcmckernel = PMCMC(ParticleGibbs, pfkernel, mcmckernel)
+            pmcmckernel = PMCMC(_rng, ParticleGibbs, pfkernel, mcmckernel)
             propose!(_rng, pmcmckernel, obj.model, obj.data)
             ## Check if constructor can be used
             pfconstructor = BaytesFilters.ParticleFilterConstructor(
@@ -63,7 +63,7 @@ end
                 mcmcconstructor,
                 PMCMCDefault()
             )
-            constructor(_rng, obj.model, obj.data, 1, TemperDefault())
+            constructor(_rng, obj.model, obj.data, 1, 1.0)
         end
     end
 end

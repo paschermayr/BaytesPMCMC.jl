@@ -36,34 +36,15 @@ function PMCMC(
     kernel::Type{M},
     pf::ParticleFilter,
     mcmc::MCMC,
-    Nchains::Integer = 1,
-    temperdefault::BaytesCore.TemperDefault = BaytesCore.TemperDefault(
-        BaytesCore.UpdateFalse(),
-        mcmc.tune.tagged.info.flattendefault.output(1.0),
-    );
+    Nchains::Integer = 1;
     default::D = PMCMCDefault(),
 ) where {M<:PMCMCKernel,D<:PMCMCDefault}
-    ## Checks before algorithm is initiated
-    #ArgCheck.@argcheck Nchains == length(temperdefault.val) "Nchains and number of temperatures differ in size."
     ## Assign PMCMC Kernel
     pmcmc = kernel(pf, mcmc)
     ## Assign tuning container ~ Placeholder for now
     tune = PMCMCTune()
     ## Return struct
     return PMCMC(pmcmc, tune)
-end
-function PMCMC(
-    kernel::Type{M},
-    pf::ParticleFilter,
-    mcmc::MCMC,
-    Nchains::Integer = 1,
-    temperdefault::BaytesCore.TemperDefault = BaytesCore.TemperDefault(
-        BaytesCore.UpdateFalse(),
-        mcmc.tune.tagged.info.flattendefault.output(1.0),
-    );
-    kwargs...
-) where {M<:PMCMCKernel}
-    return PMCMC(Random.GLOBAL_RNG, kernel, pf, mcmc, Nchains, temperdefault; kwargs...)
 end
 
 ############################################################################################
@@ -81,17 +62,13 @@ function propose!(
     pmcmc::PMCMC,
     model::ModelWrapper,
     data::D,
+    temperature::F = model.info.flattendefault.output(1.0),
     update::U=BaytesCore.UpdateTrue(),
-) where {D,U<:BaytesCore.UpdateBool}
+) where {D,F<:AbstractFloat, U<:BaytesCore.UpdateBool}
     ## Make PMCMC Proposal step
-    val, diagnostics = propose!(_rng, pmcmc.kernel, model, data, update)
+    val, diagnostics = propose!(_rng, pmcmc.kernel, model, data, temperature, update)
     ## Pack and return output
     return val, diagnostics
-end
-function propose!(
-    pmcmc::PMCMC, model::ModelWrapper, data::D, update::U=BaytesCore.UpdateTrue()
-) where {D,U<:BaytesCore.UpdateBool}
-    return propose!(Random.GLOBAL_RNG, pmcmc, model, data, update)
 end
 
 ############################################################################################
