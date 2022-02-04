@@ -3,12 +3,17 @@
 @testset "ParticleMetropolis" begin
     obj = deepcopy(myobjective)
     for kernel in mcmckernel_pf
-        mcmckernel = MCMC(_rng, kernel, myobjective_mcmc;
-            default = MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
+        mcmckernel = MCMC(
+            _rng,
+            kernel,
+            myobjective_mcmc,
+            MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
         )
         for references in references_pf
-            pfkernel = ParticleFilter(_rng, myobjective_pf ;
-                default = ParticleFilterDefault(referencing = references,)
+            pfkernel = ParticleFilter(
+                _rng,
+                myobjective_pf,
+                ParticleFilterDefault(referencing = references,)
             )
             ## Initialize pmcmc kernel
             pmcmckernel = PMCMC(_rng, ParticleMetropolis, pfkernel, mcmckernel)
@@ -29,7 +34,7 @@
                 mcmcconstructor,
                 PMCMCDefault()
             )
-            constructor(_rng, obj.model, obj.data, 1, 1.0)
+            constructor(_rng, obj.model, obj.data, 1.0, SampleDefault())
         end
     end
 end
@@ -37,12 +42,17 @@ end
 @testset "ParticleGibbs" begin
     obj = deepcopy(myobjective)
     for kernel in mcmckernel_pfa
-        mcmckernel = MCMC(_rng, kernel, myobjective_mcmc;
-            default = MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
+        mcmckernel = MCMC(
+            _rng,
+            kernel,
+            myobjective_mcmc,
+            MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
         )
         for references in references_pfa
-            pfkernel = ParticleFilter(_rng, myobjective_pf ;
-                default = ParticleFilterDefault(referencing = references,)
+            pfkernel = ParticleFilter(
+                _rng,
+                myobjective_pf,
+                ParticleFilterDefault(referencing = references,)
             )
             ## Initialize pmcmc kernel
             pmcmckernel = PMCMC(_rng, ParticleGibbs, pfkernel, mcmckernel)
@@ -63,7 +73,7 @@ end
                 mcmcconstructor,
                 PMCMCDefault()
             )
-            constructor(_rng, obj.model, obj.data, 1, 1.0)
+            constructor(_rng, obj.model, obj.data, 1., SampleDefault())
         end
     end
 end

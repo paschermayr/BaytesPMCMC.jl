@@ -28,15 +28,16 @@ function (constructor::PMCMCConstructor)(
     _rng::Random.AbstractRNG,
     model::ModelWrapper,
     data::D,
-    Nchains::Integer,
-    temperature::F
+    temperature::F,
+    info::BaytesCore.SampleDefault
 ) where {D, F<:AbstractFloat}
     return PMCMC(
         _rng,
         constructor.kernel,
-        constructor.filter(_rng, model, data, Nchains, temperature),
-        constructor.mcmc(_rng, model, data, Nchains, temperature);
-        default=constructor.default,
+        constructor.filter(_rng, model, data, temperature, info),
+        constructor.mcmc(_rng, model, data, temperature, info),
+        constructor.default,
+        info
     )
 end
 function PMCMC(

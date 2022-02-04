@@ -12,7 +12,8 @@ using BaytesCore:
     AbstractKernel,
     AbstractConstructor,
     update,
-    AcceptStatistic
+    AcceptStatistic,
+    SampleDefault
 
 import BaytesCore:
     BaytesCore,
@@ -81,6 +82,7 @@ export
     propose!,
     propagate,
     propagate!,
+    SampleDefault,
 
     #ModelWrappers
     dynamics,

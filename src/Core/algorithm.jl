@@ -36,9 +36,9 @@ function PMCMC(
     kernel::Type{M},
     pf::ParticleFilter,
     mcmc::MCMC,
-    Nchains::Integer = 1;
-    default::D = PMCMCDefault(),
-) where {M<:PMCMCKernel,D<:PMCMCDefault}
+    default::PMCMCDefault=PMCMCDefault(),
+    info::BaytesCore.SampleDefault = BaytesCore.SampleDefault()
+) where {M<:PMCMCKernel}
     ## Assign PMCMC Kernel
     pmcmc = kernel(pf, mcmc)
     ## Assign tuning container ~ Placeholder for now
