@@ -66,13 +66,12 @@ myobjective_pf = Objective(mymodel, data, :latent)
 myobjective_mcmc = Objective(mymodel, data, (:μ, :σ, :p))
 
 # Assign Particle Metropolis algorithm
+mcmcdefault = MCMCDefault(config_kw = (;ϵ = 0.05, stepsizeadaption = UpdateFalse()))
 pmetropolis = ParticleMetropolis(
     #Particle filter
     ParticleFilter(myobjective_pf),
     #MCMC kernel
-    MCMC(Metropolis, myobjective_mcmc;
-    default = MCMCDefault(config_kw = (;ϵ = 0.05, stepsizeadaption = UpdateFalse()))
-    )
+    MCMC(Metropolis, myobjective_mcmc, mcmcdefault)
 )
 
 # Proposal steps work exactly as in BaytesFilters.jl and BaytesMCMC.jl
@@ -122,10 +121,10 @@ myobjective_pf = Objective(mymodel, data, :latent)
 myobjective_mcmc = Objective(mymodel, data, (:μ, :σ, :p))
 
 # Assign Particle Gibbs sampler
+pfdefault = ParticleFilterDefault(referencing = Conditional())
 pgibbs = ParticleGibbs(
     #Conditional Particle filter
-    ParticleFilter(myobjective_pf;
-    default = ParticleFilterDefault(referencing = Conditional())
+    ParticleFilter(myobjective_pf, pfdefault
     ),
     #MCMC kernel -> can use more advanced kernels
     MCMC(NUTS, myobjective_mcmc)
