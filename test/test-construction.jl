@@ -7,7 +7,7 @@
             _rng,
             kernel,
             myobjective_mcmc,
-            MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
+            MCMCDefault(; stepsize = ConfigStepsize(;stepsizeadaption = UpdateFalse()))
         )
         for references in references_pf
             pfkernel = ParticleFilter(
@@ -26,7 +26,7 @@
             mcmcconstructor = BaytesMCMC.MCMCConstructor(
                 kernel,
                 keys(myobjective_mcmc.tagged.parameter),
-                MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
+                MCMCDefault(; stepsize = ConfigStepsize(;stepsizeadaption = UpdateFalse()))
             )
             constructor = PMCMCConstructor(
                 ParticleMetropolis,
@@ -46,7 +46,7 @@ end
             _rng,
             kernel,
             myobjective_mcmc,
-            MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
+            MCMCDefault(; stepsize = ConfigStepsize(;stepsizeadaption = UpdateFalse()))
         )
         for references in references_pfa
             pfkernel = ParticleFilter(
@@ -65,7 +65,7 @@ end
             mcmcconstructor = BaytesMCMC.MCMCConstructor(
                 kernel,
                 keys(myobjective_mcmc.tagged.parameter),
-                MCMCDefault(; config_kw = (;stepsizeadaption = UpdateFalse()))
+                MCMCDefault(; stepsize = ConfigStepsize(;stepsizeadaption = UpdateFalse()))
             )
             constructor = PMCMCConstructor(
                 ParticleGibbs,
