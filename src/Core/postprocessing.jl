@@ -67,28 +67,10 @@ function infer(
     model::ModelWrapper,
     data::D,
 ) where {D}
+    TPrediction = infer(_rng, pmcmc.kernel.pf, model, data)
     pfdiag = infer(_rng, diagnostics, pmcmc.kernel.pf, model, data)
     mcmcdiag = infer(_rng, diagnostics, pmcmc.kernel.mcmc, model, data)
-    return PMCMCDiagnostics{pfdiag,mcmcdiag}
-end
-
-"""
-$(SIGNATURES)
-Infer type of predictions of kernel.
-
-# Examples
-```julia
-```
-
-"""
-function infer(
-    _rng::Random.AbstractRNG, pmcmc::PMCMC, model::ModelWrapper, data::D, alldata::Bool=true
-) where {D}
-    if alldata
-        return infer(_rng, pmcmc.kernel.pf, model, data)
-    else
-        return infer(_rng, pmcmc.kernel.mcmc, model, data)
-    end
+    return PMCMCDiagnostics{TPrediction, pfdiag, mcmcdiag}
 end
 
 ############################################################################################
@@ -120,12 +102,14 @@ end
 function get_result(pmcmc::PMCMC)
     return get_result(pmcmc.kernel.mcmc)
 end
+#=
 function get_ℓweight(pmcmc::PMCMC)
     return get_ℓweight(pmcmc.kernel.pf)
 end
 function get_tagged(pmcmc::PMCMC)
     return get_tagged(pmcmc.kernel.mcmc)
 end
+=#
 
 ############################################################################################
 #export

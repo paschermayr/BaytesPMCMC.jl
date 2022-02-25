@@ -45,8 +45,13 @@ function propose!(
     _, pf_diagnostics = propose!(_rng, pmcmc.pf, model, data, temperature, update)
     ## Propose new θₜ - if accepted, model is updated accordingly
     _, mcmc_diagnostics = propose!(_rng, pmcmc.mcmc, model, data, temperature, update)
+    ## Assign base diagnostics - ℓobjective and predictions are taken from particle filter
+    diagnostics = BaytesCore.BaseDiagnostics(
+        pf_diagnostics.base.ℓobjective, pf_diagnostics.base.temperature, pf_diagnostics.base.prediction,
+        mcmc_diagnostics.base.iter
+    )
     ## Return pmcmc output
-    return model.val, PMCMCDiagnostics(pf_diagnostics, mcmc_diagnostics)
+    return model.val, PMCMCDiagnostics(diagnostics, pf_diagnostics, mcmc_diagnostics)
 end
 
 ############################################################################################

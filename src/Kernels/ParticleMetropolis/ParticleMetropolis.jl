@@ -48,7 +48,7 @@ function propose!(
 ) where {D,F<:AbstractFloat,U<:BaytesCore.UpdateBool}
     ## Compute initial logposterior and save initial model value
     ℓpostₜ =
-        pmcmc.pf.particles.ℓℒ.cumulative +
+        pmcmc.pf.particles.ℓobjective.cumulative +
         ModelWrappers.log_prior_with_transform(model, pmcmc.mcmc.tune.tagged)
     val = deepcopy(model.val)
     ## Update Objective with new model parameter from other MCMC samplers and/or new/latent data
@@ -68,7 +68,7 @@ function propose!(
     _, pf_diagnostics = propose!(_rng, pmcmc.pf, objective.model, objective.data, temperature, update)
     ## Compute acceptance rate
     ℓpostₜᵖ =
-        pmcmc.pf.particles.ℓℒ.cumulative +
+        pmcmc.pf.particles.ℓobjective.cumulative +
         ModelWrappers.log_prior_with_transform(objective.model, pmcmc.mcmc.tune.tagged)
     acceptᵖ = BaytesCore.AcceptStatistic(_rng, model.info.flattendefault.output(ℓpostₜᵖ - ℓpostₜ))
     if acceptᵖ.accepted
@@ -78,20 +78,27 @@ function propose!(
         ## Else set model back to initial value
         model.val = val
     end
-    #!NOTE: Would need to acceptᵖ here, but makes sampler very variable. Better to print to either use fixed stepsize or assign objective(val).
+    #!NOTE: Would need to acceptᵖ here, but makes sampler very noisy. Better to print to either use fixed stepsize or assign objective(val).
     update!(pmcmc.mcmc.tune, pmcmc.mcmc.kernel.result, accept.rate)
     mcmc_diagnostics = MCMCDiagnostics(
-        pmcmc.mcmc.kernel.result.ℓθᵤ,
-        objective.temperature,
+        BaytesCore.BaseDiagnostics(
+            pmcmc.mcmc.kernel.result.ℓθᵤ,
+            objective.temperature,
+            predict(_rng, objective),
+            pmcmc.mcmc.tune.iter.current
+        ),
+        sampler_statistic,
         divergent,
         acceptᵖ,
-        sampler_statistic,
-        predict(_rng, objective),
         generate(_rng, objective, Val(pmcmc.mcmc.tune.generated)),
-        pmcmc.mcmc.tune.iter.current,
+    )
+    ## Assign base diagnostics - ℓobjective and predictions are taken from particle filter
+    diagnostics = BaytesCore.BaseDiagnostics(
+        pf_diagnostics.base.ℓobjective, pf_diagnostics.base.temperature, pf_diagnostics.base.prediction,
+        mcmc_diagnostics.base.iter
     )
     ## Return pmcmc output
-    return model.val, PMCMCDiagnostics(pf_diagnostics, mcmc_diagnostics)
+    return model.val, PMCMCDiagnostics(diagnostics, pf_diagnostics, mcmc_diagnostics)
 end
 
 ############################################################################################

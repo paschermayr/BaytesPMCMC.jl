@@ -1,6 +1,5 @@
 ############################################################################################
 ## Make model
-
 @testset "ParticleMetropolis" begin
     obj = deepcopy(myobjective)
     for kernel in mcmckernel_pf

@@ -42,7 +42,7 @@ function PMCMC(
     ## Assign PMCMC Kernel
     pmcmc = kernel(pf, mcmc)
     ## Assign tuning container ~ Placeholder for now
-    tune = PMCMCTune()
+    tune = PMCMCTune(mcmc.tune.tagged)
     ## Return struct
     return PMCMC(pmcmc, tune)
 end
