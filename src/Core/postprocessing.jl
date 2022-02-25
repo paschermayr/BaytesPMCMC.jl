@@ -73,6 +73,21 @@ function infer(
     return PMCMCDiagnostics{TPrediction, pfdiag, mcmcdiag}
 end
 
+"""
+$(SIGNATURES)
+Infer type of predictions of kernel.
+
+# Examples
+```julia
+```
+
+"""
+function infer(
+    _rng::Random.AbstractRNG, pmcmc::PMCMC, model::ModelWrapper, data::D
+) where {D}
+    return infer(_rng, pmcmc.kernel.pf, model, data)
+end
+
 ############################################################################################
 function results(
     diagnosticsᵛ::AbstractVector{M}, pmcmc::PMCMC, Ndigits::Integer, quantiles::Vector{T}
