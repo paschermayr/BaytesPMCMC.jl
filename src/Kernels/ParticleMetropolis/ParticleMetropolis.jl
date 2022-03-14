@@ -90,7 +90,7 @@ function propose!(
         sampler_statistic,
         divergent,
         acceptᵖ,
-        generate(_rng, objective, Val(pmcmc.mcmc.tune.generated)),
+        generate(_rng, objective, pmcmc.mcmc.tune.generated),
     )
     ## Assign base diagnostics - ℓobjective and predictions are taken from particle filter
     diagnostics = BaytesCore.BaseDiagnostics(
