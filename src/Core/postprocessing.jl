@@ -117,14 +117,12 @@ end
 function get_result(pmcmc::PMCMC)
     return get_result(pmcmc.kernel.mcmc)
 end
-#=
-function get_ℓweight(pmcmc::PMCMC)
-    return get_ℓweight(pmcmc.kernel.pf)
+function predict(_rng::Random.AbstractRNG, kernel::PMCMCKernel, objective::Objective)
+    return predict(_rng, kernel.pf, objective)
 end
-function get_tagged(pmcmc::PMCMC)
-    return get_tagged(pmcmc.kernel.mcmc)
+function predict(_rng::Random.AbstractRNG, pmcmc::PMCMC, objective::Objective)
+    return predict(_rng, pmcmc.kernel, objective)
 end
-=#
 
 ############################################################################################
 #export

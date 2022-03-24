@@ -45,9 +45,9 @@ using ModelWrappers:
     DiffObjective,
     ℓObjectiveResult,
     dynamics,
-    predict,
-    generate,
     _checkprior
+
+import ModelWrappers: ModelWrappers, predict, generate
 
 using BaytesMCMC, BaytesFilters
 
