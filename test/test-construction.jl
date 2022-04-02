@@ -37,7 +37,7 @@
             constructor(_rng, obj.model, obj.data, 1.0, SampleDefault())
 
             #!NOTE: Placeholder
-            @test 1 = 1
+            @test 1 == 1
         end
     end
 end
@@ -77,6 +77,9 @@ end
                 PMCMCDefault()
             )
             constructor(_rng, obj.model, obj.data, 1., SampleDefault())
+
+            #!NOTE: Placeholder
+            @test 1 == 1
         end
     end
 end
