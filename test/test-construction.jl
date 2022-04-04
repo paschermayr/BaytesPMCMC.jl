@@ -5,7 +5,6 @@ kernel = mcmckernel_pf[1]
 references = references_pf[1]
 =#
 
-ParticleFilterConstructor(:latent, ParticleFilterDefault())
 @testset "ParticleMetropolis" begin
     obj = deepcopy(myobjective)
     for kernel in mcmckernel_pf
@@ -24,10 +23,13 @@ ParticleFilterConstructor(:latent, ParticleFilterDefault())
                 pfdefault
             )
             ## Check constructor
+            pmcmc_c = ParticleMetropolis(ParticleFilterConstructor(:latent, pfdefault), MCMCConstructor(kernel, (:μ, :σ, :p), mcmcdefault))
+            @test keys(obj.model.val) == BaytesPMCMC.get_sym(pmcmc_c)
+
             mcmcsym = :μ
             PMCMC(ParticleMetropolis, ParticleFilterConstructor(:latent, pfdefault), MCMCConstructor(kernel, mcmcsym, mcmcdefault))
             pmc = ParticleMetropolis(ParticleFilterConstructor(:latent, pfdefault), MCMCConstructor(kernel, mcmcsym, mcmcdefault))
-            @test keys(myobjective.model.val) == BaytesPMCMC.get_sym(pmc)
+            BaytesPMCMC.get_sym(pmc)
             ## Initialize pmcmc kernel
             pmcmckernel = PMCMC(_rng, ParticleMetropolis, pfkernel, mcmckernel)
             _vals, _diag = propose!(_rng, pmcmckernel, obj.model, obj.data)
@@ -82,10 +84,13 @@ end
                 pfdefault
             )
             ## Check constructor
+            pmcmc_c = ParticleGibbs(ParticleFilterConstructor(:latent, pfdefault), MCMCConstructor(kernel, (:μ, :σ, :p), mcmcdefault))
+            @test keys(obj.model.val) == BaytesPMCMC.get_sym(pmcmc_c)
+
             mcmcsym = :μ
             PMCMC(ParticleGibbs, ParticleFilterConstructor(:latent, pfdefault), MCMCConstructor(kernel, mcmcsym, mcmcdefault))
             pmc = ParticleGibbs(ParticleFilterConstructor(:latent, pfdefault), MCMCConstructor(kernel, mcmcsym, mcmcdefault))
-            @test keys(myobjective.model.val) == BaytesPMCMC.get_sym(pmc)
+            BaytesPMCMC.get_sym(pmc)
 
             ## Initialize pmcmc kernel
             pmcmckernel = PMCMC(_rng, ParticleGibbs, pfkernel, mcmckernel)
