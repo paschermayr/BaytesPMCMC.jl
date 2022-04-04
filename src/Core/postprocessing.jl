@@ -47,7 +47,13 @@ function PMCMC(
 end
 
 function get_sym(constructor::PMCMCConstructor)
-    return get_sym(constructor.mcmc)
+    #return get_sym(constructor.mcmc)
+    ## Obtain symbols from mcmc and particle filter
+    sym1 = get_sym(constructor.mcmc)
+    sym2 = get_sym(constructor.filter)
+    ## Return unique symbols as tuple
+    sym = unique((sym1..., sym2...))
+    return Tuple(sym)
 end
 
 ############################################################################################
