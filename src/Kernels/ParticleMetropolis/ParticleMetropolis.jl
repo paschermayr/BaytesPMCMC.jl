@@ -43,7 +43,7 @@ function propose!(
     pmcmc::ParticleMetropolis,
     model::ModelWrapper,
     data::D,
-    temperature::F = model.info.flattendefault.output(1.0),
+    temperature::F = model.info.reconstruct.default.output(1.0),
     update::U=BaytesCore.UpdateTrue(),
 ) where {D,F<:AbstractFloat,U<:BaytesCore.UpdateBool}
     ## Compute initial logposterior and save initial model value
@@ -70,7 +70,7 @@ function propose!(
     ℓpostₜᵖ =
         pmcmc.pf.particles.ℓobjective.cumulative +
         ModelWrappers.log_prior_with_transform(objective.model, pmcmc.mcmc.tune.tagged)
-    acceptᵖ = BaytesCore.AcceptStatistic(_rng, model.info.flattendefault.output(ℓpostₜᵖ - ℓpostₜ))
+    acceptᵖ = BaytesCore.AcceptStatistic(_rng, model.info.reconstruct.default.output(ℓpostₜᵖ - ℓpostₜ))
     if acceptᵖ.accepted
         ## If accepted, update MCMC kernel
         pmcmc.mcmc.kernel.result = resultᵖ

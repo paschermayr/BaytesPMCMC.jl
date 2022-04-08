@@ -1,7 +1,7 @@
 name = "BaytesPMCMC"
 uuid = "c4a8eb41-45be-4f57-9046-b06303d6bef8"
 authors = ["Patrick Aschermayr <p.aschermayr@gmail.com>"]
-version = "0.1.7"
+version = "0.1.8"
 
 [deps]
 ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
@@ -16,7 +16,7 @@ UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 [compat]
 julia = "1.7"
 BaytesCore = "0.1"
-ModelWrappers = "0.1"
+ModelWrappers = "0.2"
 BaytesFilters = "0.1"
 BaytesMCMC = "0.1"
 ArgCheck = "2"

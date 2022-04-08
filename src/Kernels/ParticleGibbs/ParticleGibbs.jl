@@ -38,7 +38,7 @@ function propose!(
     pmcmc::ParticleGibbs,
     model::ModelWrapper,
     data::D,
-    temperature::F = model.info.flattendefault.output(1.0),
+    temperature::F = model.info.reconstruct.default.output(1.0),
     update::U=BaytesCore.UpdateTrue(),
 ) where {D,F<:AbstractFloat, U<:BaytesCore.UpdateBool}
     ## Get trajectory via PF - always update data.latent in model
