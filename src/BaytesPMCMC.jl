@@ -39,12 +39,16 @@ using ModelWrappers:
     ModelWrapper,
     Tagged,
     Objective,
-    DiffObjective,
-    ℓObjectiveResult,
     dynamics,
     _checkprior
 
 import ModelWrappers: ModelWrappers, predict, generate
+
+using BaytesDiff:
+    BaytesDiff,
+    DiffObjective,
+    ℓObjectiveResult
+
 
 using BaytesMCMC, BaytesFilters
 
