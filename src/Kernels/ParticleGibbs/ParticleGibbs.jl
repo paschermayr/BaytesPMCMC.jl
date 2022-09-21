@@ -38,13 +38,14 @@ function propose!(
     pmcmc::ParticleGibbs,
     model::ModelWrapper,
     data::D,
-    temperature::F = model.info.reconstruct.default.output(1.0),
-    update::U=BaytesCore.UpdateTrue(),
-) where {D,F<:AbstractFloat, U<:BaytesCore.UpdateBool}
+    proposaltune::T = BaytesCore.ProposalTune(model.info.reconstruct.default.output(1.0))
+#    temperature::F = model.info.reconstruct.default.output(1.0),
+#    update::U=BaytesCore.UpdateTrue(),
+) where {D, T<:ProposalTune}
     ## Get trajectory via PF - always update data.latent in model
-    _, pf_diagnostics = propose!(_rng, pmcmc.pf, model, data, temperature, update)
+    _, pf_diagnostics = propose!(_rng, pmcmc.pf, model, data, proposaltune)
     ## Propose new θₜ - if accepted, model is updated accordingly
-    _, mcmc_diagnostics = propose!(_rng, pmcmc.mcmc, model, data, temperature, update)
+    _, mcmc_diagnostics = propose!(_rng, pmcmc.mcmc, model, data, proposaltune)
     ## Assign base diagnostics - ℓobjective and predictions are taken from particle filter
     diagnostics = BaytesCore.BaseDiagnostics(
         pf_diagnostics.base.ℓobjective, pf_diagnostics.base.temperature, pf_diagnostics.base.prediction,

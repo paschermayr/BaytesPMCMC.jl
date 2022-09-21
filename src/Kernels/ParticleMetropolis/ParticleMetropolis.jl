@@ -43,9 +43,12 @@ function propose!(
     pmcmc::ParticleMetropolis,
     model::ModelWrapper,
     data::D,
-    temperature::F = model.info.reconstruct.default.output(1.0),
-    update::U=BaytesCore.UpdateTrue(),
-) where {D,F<:AbstractFloat,U<:BaytesCore.UpdateBool}
+    proposaltune::T = BaytesCore.ProposalTune(model.info.reconstruct.default.output(1.0))
+#    temperature::F = model.info.reconstruct.default.output(1.0),
+#    update::U=BaytesCore.UpdateTrue(),
+) where {D, T<:ProposalTune}
+    ## Update Proposal tuning information that is shared among algorithms
+    @unpack temperature, update = proposaltune
     ## Compute initial logposterior and save initial model value
     ℓpostₜ =
         pmcmc.pf.particles.ℓobjective.cumulative +
@@ -65,7 +68,7 @@ function propose!(
             objective.model, pmcmc.mcmc.tune.tagged, resultᵖ.θᵤ
         )
     end
-    _, pf_diagnostics = propose!(_rng, pmcmc.pf, objective.model, objective.data, temperature, update)
+    _, pf_diagnostics = propose!(_rng, pmcmc.pf, objective.model, objective.data, proposaltune)
     ## Compute acceptance rate
     ℓpostₜᵖ =
         pmcmc.pf.particles.ℓobjective.cumulative +

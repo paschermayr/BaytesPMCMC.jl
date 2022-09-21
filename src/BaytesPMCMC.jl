@@ -13,7 +13,8 @@ using BaytesCore:
     AbstractConstructor,
     update,
     AcceptStatistic,
-    SampleDefault
+    SampleDefault,
+    ProposalTune
 
 import BaytesCore:
     BaytesCore,
