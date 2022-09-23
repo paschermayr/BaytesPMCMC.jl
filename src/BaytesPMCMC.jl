@@ -31,6 +31,7 @@ import BaytesCore:
     get_result,
     get_sym,
     generate_showvalues,
+    generate,
     UpdateBool,
     UpdateTrue,
     UpdateFalse
@@ -43,7 +44,7 @@ using ModelWrappers:
     dynamics,
     _checkprior
 
-import ModelWrappers: ModelWrappers, predict, generate
+import ModelWrappers: ModelWrappers, predict
 
 using BaytesDiff:
     BaytesDiff,
@@ -75,6 +76,7 @@ export
     UpdateBool,
     UpdateTrue,
     UpdateFalse,
+    generate,
 
     PMCMCKernel,
     update!,
@@ -88,6 +90,5 @@ export
 
     #ModelWrappers
     dynamics,
-    predict,
-    generate
+    predict
 end
