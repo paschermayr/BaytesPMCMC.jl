@@ -49,7 +49,7 @@ references = references_pf[1]
                 mcmcconstructor,
                 PMCMCDefault()
             )
-            constructor(_rng, obj.model, obj.data, 1.0, SampleDefault())
+            constructor(_rng, obj.model, obj.data, ProposalTune(1.0), SampleDefault())
             results([_diag], pmcmckernel, 2, [.1, .2, .5, .8, .9])
             BaytesPMCMC.result!(pmcmckernel, BaytesPMCMC.get_result(pmcmckernel))
             generate_showvalues(_diag)()
@@ -111,7 +111,7 @@ end
                 mcmcconstructor,
                 PMCMCDefault()
             )
-            constructor(_rng, obj.model, obj.data, 1., SampleDefault())
+            constructor(_rng, obj.model, obj.data, ProposalTune(1.0), SampleDefault())
             results([_diag], pmcmckernel, 2, [.1, .2, .5, .8, .9])
             BaytesPMCMC.result!(pmcmckernel, BaytesPMCMC.get_result(pmcmckernel))
             generate_showvalues(_diag)()

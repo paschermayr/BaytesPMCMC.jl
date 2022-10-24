@@ -7,7 +7,7 @@ using Distributions
 
 ############################################################################################
 # Import Baytes Packages
-using ModelWrappers, BaytesMCMC, BaytesFilters, BaytesPMCMC
+using BaytesCore, ModelWrappers, BaytesMCMC, BaytesFilters, BaytesPMCMC
 
 ############################################################################################
 # Include Files

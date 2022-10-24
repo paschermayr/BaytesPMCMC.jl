@@ -28,13 +28,13 @@ function (constructor::PMCMCConstructor)(
     _rng::Random.AbstractRNG,
     model::ModelWrapper,
     data::D,
-    temperature::F,
+    proposaltune::P,
     info::BaytesCore.SampleDefault
-) where {D, F<:AbstractFloat}
+) where {D, P<:BaytesCore.ProposalTune}
     # NOTE: In propose!(), pf proposal before mcmc -> for initialization, can swap order for better initial proposal
     #!NOTE: First sample model parameter from prior, then sample trajectory given new parameter
-    mcmc = constructor.mcmc(_rng, model, data, temperature, info)
-    pf = constructor.filter(_rng, model, data, temperature, info)
+    mcmc = constructor.mcmc(_rng, model, data, proposaltune, info)
+    pf = constructor.filter(_rng, model, data, proposaltune, info)
     return PMCMC(
         _rng,
         constructor.kernel,
