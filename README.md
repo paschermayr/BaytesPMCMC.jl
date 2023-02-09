@@ -34,10 +34,10 @@ data = [rand(_rng, Normal(μ[iter], σ[iter])) for iter in latent]
 # Create ModelWrapper struct, assuming we do not know latent
 latent_init = rand(_rng, Categorical(p), N)
 myparameter = (;
-    μ = Param(μ, [Normal(-2., 5), Normal(2., 5)]),
-    σ = Param(σ, [Gamma(2.,2.), Gamma(2.,2.)]),
-    p = Param(p, Dirichlet(2, 2)),
-    latent = Param(latent_init, [Categorical(p) for _ in Base.OneTo(N)]),
+    μ = Param([Normal(-2., 5), Normal(2., 5)], μ, ),
+    σ = Param([Gamma(2.,2.), Gamma(2.,2.)], σ, ),
+    p = Param(Dirichlet(2, 2), p, ),
+    latent = Param([Categorical(p) for _ in Base.OneTo(N)], latent_init, ),
 )
 mymodel = ModelWrapper(myparameter)
 myobjective = Objective(mymodel, data)
@@ -66,12 +66,14 @@ myobjective_pf = Objective(mymodel, data, :latent)
 myobjective_mcmc = Objective(mymodel, data, (:μ, :σ, :p))
 
 # Assign Particle Metropolis algorithm
-mcmcdefault = MCMCDefault(config_kw = (;ϵ = 0.05, stepsizeadaption = UpdateFalse()))
+mcmcdefault = MCMCDefault(;
+	stepsize = ConfigStepsize(; ϵ = 1.0, stepsizeadaption = UpdateFalse()),
+)
 pmetropolis = ParticleMetropolis(
     #Particle filter
-    ParticleFilter(myobjective_pf),
+    ParticleFilter(_rng, myobjective_pf),
     #MCMC kernel
-    MCMC(Metropolis, myobjective_mcmc, mcmcdefault)
+    MCMC(_rng, Metropolis, myobjective_mcmc, mcmcdefault)
 )
 
 # Proposal steps work exactly as in BaytesFilters.jl and BaytesMCMC.jl
@@ -89,7 +91,7 @@ function (objective::Objective{<:ModelWrapper{BaseModel}})(θ::NamedTuple)
     @unpack model, data, tagged = objective
     @unpack μ, σ, p, latent = θ
 ## Prior -> a faster shortcut without initializing the priors again
-    lprior = log_prior(tagged.info.constraint, ModelWrappers.subset(θ, tagged.parameter) )
+    lprior = log_prior(tagged.info.transform, ModelWrappers.subset(θ, tagged.parameter) )
 ##Likelihood
     dynamicsᵉ = [Normal(μ[iter], σ[iter]) for iter in eachindex(μ)]
     dynamicsˢ = Categorical(p)
@@ -110,7 +112,7 @@ end
 myobjective_mcmc(myobjective_mcmc.model.val)
 # Note - It is good to benchmark this function, as it will allocate >98% of the mcmc kernel time
 using BenchmarkTools
-$myobjective_mcmc($myobjective_mcmc.model.val) #18.300 μs (8 allocations: 496 bytes)
+$myobjective_mcmc($myobjective_mcmc.model.val) #13.600 μs (2 allocations: 176 bytes)
 ```
 
 As we can analytically compute the marginal likelihood of a univariate mixture, I could also write down (and comment out) the corresponding objective function in the MCMC case. This should help understanding my comments above. Once our objective is defined, we can intialize a `ParticleGibbs` struct and sample with it:
@@ -124,10 +126,10 @@ myobjective_mcmc = Objective(mymodel, data, (:μ, :σ, :p))
 pfdefault = ParticleFilterDefault(referencing = Conditional())
 pgibbs = ParticleGibbs(
     #Conditional Particle filter
-    ParticleFilter(myobjective_pf, pfdefault
+    ParticleFilter(_rng, myobjective_pf, pfdefault
     ),
     #MCMC kernel -> can use more advanced kernels
-    MCMC(NUTS, myobjective_mcmc)
+    MCMC(_rng, NUTS, myobjective_mcmc)
 )
 
 # Proposal steps work exactly as in BaytesFilters.jl and BaytesMCMC.jl
