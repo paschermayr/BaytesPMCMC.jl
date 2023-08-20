@@ -8,6 +8,7 @@ using Distributions
 ############################################################################################
 # Import Baytes Packages
 using BaytesCore, ModelWrappers, BaytesMCMC, BaytesFilters, BaytesPMCMC
+using ForwardDiff
 
 ############################################################################################
 # Include Files
