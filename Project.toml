@@ -23,6 +23,7 @@ BaytesMCMC = "0.3"
 DocStringExtensions = "0.8, 0.9"
 ModelWrappers = "0.5"
 SimpleUnPack = "1"
+Random = "1.9"
 julia = "^1.9"
 
 [extras]
