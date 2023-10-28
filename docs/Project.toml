@@ -1,3 +1,6 @@
 [deps]
 BaytesPMCMC = "c4a8eb41-45be-4f57-9046-b06303d6bef8"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+
+[compat]
+Documenter = "1"
